@@ -15,8 +15,8 @@ let PostSchema = new mongoose.Schema({
   // 保存的分类集合的_id字段
   category_id: {
     type: String,
-    // 0代表未分类
-    default: '0'
+    // 空字符串代表未分类
+    default: ""
   },
   content: {
     type: String,

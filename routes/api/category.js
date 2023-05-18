@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-// 导入文章模型
+// 导入分类模型
 const CategoryModel = require('../../models/CategoryModel');
 
 // 导入token校验中间件

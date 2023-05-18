@@ -10,6 +10,8 @@ const moment = require('moment');
 
 // 导入token校验中间件
 const checkTokenMiddleware = require('../../middleware/checkTokenMiddleware');
+// 导入查找分类中间件
+const checkCategoryMiddleware = require('../../middleware/checkCategoryMiddleware');
 
 // 获取文章
 router.get('/post', (req, res) => {
@@ -34,7 +36,7 @@ router.get('/post', (req, res) => {
 })
 
 // 添加文章
-router.post('/post', checkTokenMiddleware, (req, res) => {
+router.post('/post', checkTokenMiddleware, checkCategoryMiddleware, (req, res) => {
   let { title, content, category_id, isShow } = req.body
   if (!title) {
     res.json({
@@ -107,9 +109,9 @@ router.post('/post/delete', checkTokenMiddleware, (req, res) => {
 })
 
 // 修改文章
-router.post('/post/update', checkTokenMiddleware, (req, res) => {
+router.post('/post/update', checkTokenMiddleware, checkCategoryMiddleware, (req, res) => {
   let { post_id, title, content, category_id, isShow } = req.body
-  if(!post_id) {
+  if (!post_id) {
     res.json({
       code: '4031',
       msg: '缺少post_id',
