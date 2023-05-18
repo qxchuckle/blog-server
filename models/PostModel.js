@@ -2,26 +2,40 @@
 const mongoose = require('mongoose');
 // 文档结构对象
 let PostSchema = new mongoose.Schema({
-    title: {
-      type: String,
-      required: true,
-    },
-    category_id: {
-      type: String,
-      required: true,
-    },
-    content: {
-      type: String,
-    },
-    // 存时间戳
-    create_time: {
-      type: String,
-      required: true,
-    },
-    revise_time: {
-      type: String,
-      required: true,
-    }
+  // 该id用于路由参数
+  post_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  // 保存的分类集合的_id字段
+  category_id: {
+    type: String,
+    // 0代表未分类
+    default: '0'
+  },
+  content: {
+    type: String,
+    default: '',
+  },
+  // 存时间戳
+  create_time: {
+    type: String,
+    required: true,
+  },
+  revise_time: {
+    type: String,
+    required: true,
+  },
+  isShow: {
+    type: Boolean,
+    // 默认展示文章
+    default: true
+  }
 });
 // 文档模型对象
 let PostModel = mongoose.model('posts', PostSchema);

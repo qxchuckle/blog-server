@@ -47,7 +47,7 @@ router.post('/login',checkAuthMiddleware, (req, res) => {
     })
   }).catch(err => {
     res.json({
-      code: '2003',
+      code: '2000',
       msg: '登陆出错',
       data: null
     })
@@ -83,7 +83,7 @@ router.post('/reg',checkAuthMiddleware, (req, res) => {
         })
       }).catch(err => {
         res.json({
-          code: '2012',
+          code: '2010',
           msg: '注册失败',
           data: null
         })

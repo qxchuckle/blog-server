@@ -7,6 +7,8 @@ const multer = require('multer')
 
 // 导入路由
 const authRouter = require('./routes/api/auth.js');
+const postRouter = require('./routes/api/post.js');
+const categoryRouter = require('./routes/api/category.js');
 
 var app = express();
 
@@ -37,9 +39,19 @@ app.all("/*", function (req, res, next) {
     next();
 })
 
-// 使用登陆接口路由，路径添加api前缀
+// 使用接口路由，路径添加api前缀
 app.use('/api', authRouter);
+app.use('/api', postRouter);
+app.use('/api', categoryRouter);
 
+// 最后兜底的路由
+app.all('*', (req,res) => {
+  res.json({
+    code: 9001,
+    msg: '无效的api',
+    data: null
+  })
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -55,7 +67,7 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.json({
-    code: '9001',
+    code: '9002',
     msg: '服务器内部错误',
     data: null
   })
