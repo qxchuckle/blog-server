@@ -43,6 +43,7 @@ router.post('/category', checkTokenMiddleware, (req, res) => {
   CategoryModel.findOne({ name }).then((data) => {
     // 不为null说明分类存在
     if (data) {
+      console.log(data);
       res.json({
         code: '4012',
         msg: '分类已存在',

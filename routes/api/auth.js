@@ -42,6 +42,7 @@ router.post('/login',checkAuthMiddleware, (req, res) => {
       code: '0000',
       msg: '登陆成功',
       data: {
+        username,
         token: token
       }
     })
