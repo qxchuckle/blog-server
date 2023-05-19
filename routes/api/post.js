@@ -13,11 +13,18 @@ const checkTokenMiddleware = require('../../middleware/checkTokenMiddleware');
 // 导入查找分类中间件
 const checkCategoryMiddleware = require('../../middleware/checkCategoryMiddleware');
 
+
 // 获取文章
 router.get('/post', (req, res) => {
   // 按创建时间降序排序
-  PostModel.find().skip({ isShow: false }).select({ _id: 0, __v: 0 }).sort({ create_time: -1 })
+  PostModel.find().select({ _id: 0, __v: 0 }).sort({ create_time: -1 })
     .then((data) => {
+      for(let item of data){
+        item.content = item.content.replace(/<[^>]*>/g, '')
+        if(item.content.length > 30){
+          item.content = item.content.slice(0,30)
+        }
+      }
       res.json({
         code: '0000',
         msg: '获取文章成功',
@@ -30,6 +37,36 @@ router.get('/post', (req, res) => {
       res.json({
         code: '3000',
         msg: '获取文章失败',
+        data: null
+      })
+    })
+})
+
+// 获取单个文章
+router.get('/post/one', (req, res) => {
+  // 按创建时间降序排序
+  let query = req.query;
+  console.log(query)
+  PostModel.findOne({ post_id: query.post_id }).select({ _id: 0, __v: 0 })
+    .then((data) => {
+      if(data){
+        res.json({
+          code: '0000',
+          msg: '获取单个文章成功',
+          data: data
+        })
+      }else{
+        res.json({
+          code: '3009',
+          msg: '获取单个文章失败',
+          data: data
+        })
+      }
+    }).catch(err => {
+      console.log(err);
+      res.json({
+        code: '3000',
+        msg: '获取单个文章失败',
         data: null
       })
     })
