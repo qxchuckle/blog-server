@@ -10,9 +10,31 @@ const config = require('../../config');
 const jwt = require('jsonwebtoken');
 
 const checkAuthMiddleware = require('../../middleware/checkAuthMiddleware');
+// 导入token校验中间件
+const checkTokenMiddleware = require('../../middleware/checkTokenMiddleware');
+
+// 检测token自动登陆接口
+router.post('/autoLogin', checkTokenMiddleware, (req, res) => {
+  // 有这两个属性说明解析token成功
+  if ( req.username && req.userID) {
+    res.json({
+      code: '0000',
+      msg: '登陆成功',
+      data: {
+        username: req.username
+      }
+    })
+  }else{
+    res.json({
+      code: '90013',
+      msg: '请先登陆',
+      data: null
+    })
+  }
+})
 
 // 登陆API
-router.post('/login',checkAuthMiddleware, (req, res) => {
+router.post('/login', checkAuthMiddleware, (req, res) => {
   // 获取用户名和密码
   let { username, password } = req.body;
   // 查询数据库，看有没有该用户
@@ -56,7 +78,7 @@ router.post('/login',checkAuthMiddleware, (req, res) => {
 });
 
 // 注册API
-router.post('/reg',checkAuthMiddleware, (req, res) => {
+router.post('/reg', checkAuthMiddleware, (req, res) => {
   // 如果用户名重复就重新注册
   UserModel.findOne({ username: req.body.username })
     .then(data => {
