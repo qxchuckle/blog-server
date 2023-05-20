@@ -21,48 +21,63 @@ router.get('/post', (req, res) => {
   let page = Number(req.query.page) || 0; // 第几页
   let postNum = Number(req.query.postNum) || 0; // 每页多少个文章
   let keyword = Number(req.query.keyword) || ""; // 查找关键字
+  let category_id = req.query.category_id || "";
+  let condition = {
+    $or: [
+      { content: { $regex: keyword, $options: 'i' } },
+      { title: { $regex: keyword, $options: 'i' } },
+    ]
+  }
+  if (category_id.length) {
+    condition = {
+      $and: [
+        {
+          $or: [
+            { content: { $regex: keyword, $options: 'i' } },
+            { title: { $regex: keyword, $options: 'i' } }
+          ]
+        },
+        { category_id: category_id }
+      ]
+    }
+  }
   // 查找符合关键字条件的文档总数，用于展示分页
-  PostModel.countDocuments({
-    content: { $regex: keyword, $options: 'i' },
-    title: { $regex: keyword, $options: 'i' },
-  }).then((count) => {
-    postSize = count;
-    // 按创建时间降序排序
-    PostModel.find({ 
-      content: { $regex: keyword, $options: 'i' },
-      title: { $regex: keyword, $options: 'i' },
-    })
-      .select({ _id: 0, __v: 0 })
-      .sort({ create_time: -1 })
-      .skip((page - 1) * postNum)
-      .limit(postNum)
-      .then((data) => {
-        for (let item of data) {
-          item.content = item.content.replace(/<[^>]*>/g, '')
-          if (item.content.length > 30) {
-            item.content = item.content.slice(0, 30)
+  PostModel.countDocuments(condition)
+    .then((count) => {
+      postSize = count;
+      // 按创建时间降序排序
+      PostModel.find(condition)
+        .select({ _id: 0, __v: 0 })
+        .sort({ create_time: -1 })
+        .skip((page - 1) * postNum)
+        .limit(postNum)
+        .then((data) => {
+          for (let item of data) {
+            item.content = item.content.replace(/<[^>]*>/g, '')
+            if (item.content.length > 30) {
+              item.content = item.content.slice(0, 30)
+            }
           }
-        }
-        res.json({
-          code: '0000',
-          msg: '获取文章成功',
-          data: {
-            postArr: data,
-            // 将文章总数返回
-            postSize,
-          }
+          res.json({
+            code: '0000',
+            msg: '获取文章成功',
+            data: {
+              postArr: data,
+              // 将文章总数返回
+              postSize,
+            }
+          })
+        }).catch(err => {
+          console.log(err);
+          res.json({
+            code: '3000',
+            msg: '获取文章失败',
+            data: null
+          })
         })
-      }).catch(err => {
-        console.log(err);
-        res.json({
-          code: '3000',
-          msg: '获取文章失败',
-          data: null
-        })
-      })
-  }).catch((err) => {
-    console.log(`Error: ${err}`);
-  });
+    }).catch((err) => {
+      console.log(`Error: ${err}`);
+    });
 })
 
 // 获取单个文章
