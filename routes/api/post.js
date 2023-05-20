@@ -18,13 +18,24 @@ const checkCategoryMiddleware = require('../../middleware/checkCategoryMiddlewar
 router.get('/post', (req, res) => {
   // 记录集合的长度
   let postSize = 0;
-  PostModel.countDocuments().then((count) => {
+  let page = Number(req.query.page) || 0; // 第几页
+  let postNum = Number(req.query.postNum) || 0; // 每页多少个文章
+  let keyword = Number(req.query.keyword) || ""; // 查找关键字
+  // 查找符合关键字条件的文档总数，用于展示分页
+  PostModel.countDocuments({
+    content: { $regex: keyword, $options: 'i' },
+    title: { $regex: keyword, $options: 'i' },
+  }).then((count) => {
     postSize = count;
-    console.log(postSize);
-    let page = Number(req.query.page) || 0; // 第几页
-    let postNum = Number(req.query.postNum) || 0; // 每页多少个文章
     // 按创建时间降序排序
-    PostModel.find().select({ _id: 0, __v: 0 }).sort({ create_time: -1 }).skip((page - 1) * postNum).limit(postNum)
+    PostModel.find({ 
+      content: { $regex: keyword, $options: 'i' },
+      title: { $regex: keyword, $options: 'i' },
+    })
+      .select({ _id: 0, __v: 0 })
+      .sort({ create_time: -1 })
+      .skip((page - 1) * postNum)
+      .limit(postNum)
       .then((data) => {
         for (let item of data) {
           item.content = item.content.replace(/<[^>]*>/g, '')
