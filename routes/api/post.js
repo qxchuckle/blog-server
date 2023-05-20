@@ -55,7 +55,7 @@ router.get('/post', (req, res) => {
           for (let item of data) {
             item.content = item.content.replace(/<[^>]*>/g, '')
             if (item.content.length > 30) {
-              item.content = item.content.slice(0, 40)
+              item.content = item.content.slice(0, 50)
             }
           }
           res.json({
