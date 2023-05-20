@@ -14,10 +14,12 @@ const checkTokenMiddleware = require('../../middleware/checkTokenMiddleware');
 const checkCategoryMiddleware = require('../../middleware/checkCategoryMiddleware');
 
 
-// 获取文章
+// 获取文章，默认获取全部，支持分页
 router.get('/post', (req, res) => {
   // 按创建时间降序排序
-  PostModel.find().select({ _id: 0, __v: 0 }).sort({ create_time: -1 })
+  let page = Number(req.query.page) || 0; // 第几页
+  let postNum = Number(req.query.postNum) || 0; // 每页多少个文章
+  PostModel.find().select({ _id: 0, __v: 0 }).sort({ create_time: -1 }).skip((page-1)*postNum).limit(page*postNum)
     .then((data) => {
       for(let item of data){
         item.content = item.content.replace(/<[^>]*>/g, '')
