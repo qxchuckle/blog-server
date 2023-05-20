@@ -16,32 +16,42 @@ const checkCategoryMiddleware = require('../../middleware/checkCategoryMiddlewar
 
 // 获取文章，默认获取全部，支持分页
 router.get('/post', (req, res) => {
-  // 按创建时间降序排序
-  let page = Number(req.query.page) || 0; // 第几页
-  let postNum = Number(req.query.postNum) || 0; // 每页多少个文章
-  PostModel.find().select({ _id: 0, __v: 0 }).sort({ create_time: -1 }).skip((page-1)*postNum).limit(page*postNum)
-    .then((data) => {
-      for(let item of data){
-        item.content = item.content.replace(/<[^>]*>/g, '')
-        if(item.content.length > 30){
-          item.content = item.content.slice(0,30)
+  // 记录集合的长度
+  let postSize = 0;
+  PostModel.countDocuments().then((count) => {
+    postSize = count;
+    console.log(postSize);
+    let page = Number(req.query.page) || 0; // 第几页
+    let postNum = Number(req.query.postNum) || 0; // 每页多少个文章
+    // 按创建时间降序排序
+    PostModel.find().select({ _id: 0, __v: 0 }).sort({ create_time: -1 }).skip((page - 1) * postNum).limit(postNum)
+      .then((data) => {
+        for (let item of data) {
+          item.content = item.content.replace(/<[^>]*>/g, '')
+          if (item.content.length > 30) {
+            item.content = item.content.slice(0, 30)
+          }
         }
-      }
-      res.json({
-        code: '0000',
-        msg: '获取文章成功',
-        data: {
-          postArr: data
-        }
+        res.json({
+          code: '0000',
+          msg: '获取文章成功',
+          data: {
+            postArr: data,
+            // 将文章总数返回
+            postSize,
+          }
+        })
+      }).catch(err => {
+        console.log(err);
+        res.json({
+          code: '3000',
+          msg: '获取文章失败',
+          data: null
+        })
       })
-    }).catch(err => {
-      console.log(err);
-      res.json({
-        code: '3000',
-        msg: '获取文章失败',
-        data: null
-      })
-    })
+  }).catch((err) => {
+    console.log(`Error: ${err}`);
+  });
 })
 
 // 获取单个文章
@@ -51,13 +61,13 @@ router.get('/post/one', (req, res) => {
   console.log(query)
   PostModel.findOne({ post_id: query.post_id }).select({ _id: 0, __v: 0 })
     .then((data) => {
-      if(data){
+      if (data) {
         res.json({
           code: '0000',
           msg: '获取单个文章成功',
           data: data
         })
-      }else{
+      } else {
         res.json({
           code: '3009',
           msg: '获取单个文章失败',
