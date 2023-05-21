@@ -18,7 +18,7 @@ const checkCategoryMiddleware = require('../../middleware/checkCategoryMiddlewar
 router.get('/post', (req, res) => {
   // 记录集合的长度
   let postSize = 0;
-  let keyword = Number(req.query.keyword) || ""; // 查找关键字
+  let keyword = req.query.keyword || ""; // 查找关键字
   let category_id = req.query.category_id || "";
   let condition = {
     $or: [
