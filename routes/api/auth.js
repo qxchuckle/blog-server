@@ -79,6 +79,12 @@ router.post('/login', checkAuthMiddleware, (req, res) => {
 
 // 注册API
 router.post('/reg', checkAuthMiddleware, (req, res) => {
+  res.json({
+    code: '9999',
+    msg: '不允许注册',
+    data: null
+  })
+  return;
   // 如果用户名重复就重新注册
   UserModel.findOne({ username: req.body.username })
     .then(data => {
