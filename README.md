@@ -3,11 +3,11 @@
 
 前端：[仓库 blog-vue](https://github.com/qxchuckle/blog-vue)
 
-Vue3 + Vue Router + Pinia + Naive UI + wangEditor
+Vue3 + Vite + Vue Router + Pinia + Naive UI + wangEditor + axios + sass
 
 后端：[仓库 blog-server](https://github.com/qxchuckle/blog-server)
 
-NodeJS + Express + MongoDB + Mongoose
+NodeJS + Express + MongoDB + Mongoose + jsonwebtoken
 
 # 后端
 接口文档：[API文档](https://console-docs.apipost.cn/preview/c671abaeb3ac6f29/c22da7ca55753064)
