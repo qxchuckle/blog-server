@@ -54,7 +54,7 @@ router.get('/post', (req, res) => {
         .then((data) => {
           for (let item of data) {
             item.content = item.content.replace(/<[^>]*>/g, '')
-            if (item.content.length > 30) {
+            if (item.content.length > 50) {
               item.content = item.content.slice(0, 50)
             }
           }
