@@ -18,8 +18,6 @@ const checkCategoryMiddleware = require('../../middleware/checkCategoryMiddlewar
 router.get('/post', (req, res) => {
   // 记录集合的长度
   let postSize = 0;
-  let page = Number(req.query.page) || 0; // 第几页
-  let postNum = Number(req.query.postNum) || 0; // 每页多少个文章
   let keyword = Number(req.query.keyword) || ""; // 查找关键字
   let category_id = req.query.category_id || "";
   let condition = {
@@ -45,6 +43,8 @@ router.get('/post', (req, res) => {
   PostModel.countDocuments(condition)
     .then((count) => {
       postSize = count;
+      let page = Number(req.query.page) || 1; // 第几页，默认获取第一页
+      let postNum = Number(req.query.postNum) || postSize; // 每页多少个文章，默认获取全部
       // 按创建时间降序排序
       PostModel.find(condition)
         .select({ _id: 0, __v: 0 })
