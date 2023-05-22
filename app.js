@@ -27,17 +27,37 @@ const upload = multer({ storage: storage })
 app.use(upload.none())
 
 // 解决API跨域问题
+const allowedOrigins = ['http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'https://blog.qcqx.cn', 'http://blog.qcqx.cn'];
 app.all("/*", function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  res.header('Content-Type', 'application/json;charset=utf-8');
-  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, PATCH ,OPTIONS');
-  res.header("Access-Control-Allow-Credentials", true); // 跨域的时候是否携带cookie
-  if (req.method.toLowerCase() == 'options')
-    res.send(200); // 让options 尝试请求快速结束
-  else
-    next();
+  if (allowedOrigins.includes(req.headers.origin)) {
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Headers', '*');
+    res.header('Content-Type', 'application/json;charset=utf-8');
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, PATCH ,OPTIONS');
+    res.header("Access-Control-Allow-Credentials", true); // 跨域的时候是否携带cookie
+    if (req.method.toLowerCase() == 'options')
+      res.send(200); // 让options 尝试请求快速结束
+    else 
+      next();
+  }else{
+    res.json({
+      code: 9403,
+      msg: '没有访问权限',
+      data: null
+    })
+  }
 })
+// app.all("/*", function (req, res, next) {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Headers', '*');
+//   res.header('Content-Type', 'application/json;charset=utf-8');
+//   res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, PATCH ,OPTIONS');
+//   res.header("Access-Control-Allow-Credentials", true); // 跨域的时候是否携带cookie
+//   if (req.method.toLowerCase() == 'options')
+//     res.send(200); // 让options 尝试请求快速结束
+//   else
+//     next();
+// })
 
 // 使用接口路由，路径添加api前缀
 app.use('/api', authRouter);
